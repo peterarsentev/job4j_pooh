@@ -24,17 +24,19 @@ public class QueueSchema implements Schema {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                for (var receiver : receivers) {
-                    var queue = data.get(receiver.name());
-                    var message = queue.poll();
-                    if (message == null) {
-                        continue;
+                do {
+                    for (var receiver : receivers) {
+                        var queue = data.get(receiver.name());
+                        var message = queue.poll();
+                        if (message == null) {
+                            continue;
+                        }
+                        receiver.receive(
+                                message
+                        );
                     }
-                    receiver.receive(
-                            message
-                    );
-                }
-                condition.off();
+                    condition.off();
+                } while(condition.check());
                 condition.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

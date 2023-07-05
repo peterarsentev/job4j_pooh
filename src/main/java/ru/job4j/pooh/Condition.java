@@ -18,4 +18,8 @@ public class Condition {
             wait();
         }
     }
+
+    synchronized boolean check() {
+        return flag;
+    }
 }
