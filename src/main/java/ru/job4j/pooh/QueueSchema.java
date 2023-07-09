@@ -3,7 +3,7 @@ package ru.job4j.pooh;
 import java.util.concurrent.*;
 
 public class QueueSchema implements Schema {
-    private final CopyOnWriteArrayList<Receiver> receivers = new CopyOnWriteArrayList<Receiver>();
+    private final CopyOnWriteArrayList<Receiver> receivers = new CopyOnWriteArrayList<>();
     private final ConcurrentHashMap<String, BlockingQueue<String>> data = new ConcurrentHashMap<>();
     private final Condition condition = new Condition();
 
