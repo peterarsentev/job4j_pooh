@@ -51,6 +51,22 @@ class QueueSchemaTest {
     }
 
     @Test
+    public void whenReceiverMultiMessageByWeather() throws InterruptedException {
+        var queue = new QueueSchema();
+        var result = new CopyOnWriteArrayList<String>();
+        var count = new CountDownLatch(2);
+        queue.addReceiver(new TextReceiver(count, "weather", result));
+        queue.publish(new Message("weather", "18"));
+        queue.publish(new Message("weather", "20"));
+        var thread = new Thread(queue);
+        thread.start();
+        count.await();
+        thread.interrupt();
+        assertThat(result).contains("18", "20");
+    }
+
+
+    @Test
     public void whenMultiReceivers() throws InterruptedException {
         var queue = new QueueSchema();
         var result = new CopyOnWriteArrayList<String>();

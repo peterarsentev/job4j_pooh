@@ -23,20 +23,20 @@ public class QueueSchema implements Schema {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            try {
-                do {
-                    for (var receiver : receivers) {
-                        var queue = data.get(receiver.name());
-                        var message = queue.poll();
-                        if (message == null) {
-                            continue;
-                        }
+            do {
+                for (var receiver : receivers) {
+                    var queue = data.get(receiver.name());
+                    var message = queue.poll();
+                    while (message != null) {
                         receiver.receive(
                                 message
                         );
+                        message = queue.poll();
                     }
-                    condition.off();
-                } while(condition.check());
+                }
+                condition.off();
+            } while(condition.check());
+            try {
                 condition.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
