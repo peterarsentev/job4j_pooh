@@ -1,7 +1,7 @@
 package ru.job4j.pooh;
 
 public class Condition {
-    private boolean flag = false;
+    private volatile boolean flag = false;
 
     synchronized void on() {
         flag = true;
@@ -19,7 +19,7 @@ public class Condition {
         }
     }
 
-    synchronized boolean check() {
+    boolean check() {
         return flag;
     }
 }
