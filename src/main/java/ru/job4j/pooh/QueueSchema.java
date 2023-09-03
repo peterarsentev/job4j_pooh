@@ -24,26 +24,24 @@ public class QueueSchema implements Schema {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
-            do {
-                for (var queueKey : receivers.keySet()) {
-                    var queue = data.getOrDefault(queueKey, new LinkedBlockingQueue<>());
-                    var receiversByQueue = receivers.get(queueKey);
-                    var it = receiversByQueue.iterator();
-                    while (it.hasNext()) {
-                        var data = queue.poll();
-                        if (data != null) {
-                            it.next().receive(data);
-                        }
-                        if (data == null) {
-                            break;
-                        }
-                        if (!it.hasNext()) {
-                            it = receiversByQueue.iterator();
-                        }
+            for (var queueKey : receivers.keySet()) {
+                var queue = data.getOrDefault(queueKey, new LinkedBlockingQueue<>());
+                var receiversByQueue = receivers.get(queueKey);
+                var it = receiversByQueue.iterator();
+                while (it.hasNext()) {
+                    var data = queue.poll();
+                    if (data != null) {
+                        it.next().receive(data);
+                    }
+                    if (data == null) {
+                        break;
+                    }
+                    if (!it.hasNext()) {
+                        it = receiversByQueue.iterator();
                     }
                 }
-                condition.off();
-            } while (condition.check());
+            }
+            condition.off();
             try {
                 condition.await();
             } catch (InterruptedException e) {
